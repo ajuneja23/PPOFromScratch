@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 
-## Class for creating a simple FF network for the "actor"
+## Class for creating a simple FF network for the "critic"
 
-class Actor(nn.Module):
+class Critic(nn.Module):
     def __init__(self, input_size, output_size):
         super().__init__()
         self.fc1 = nn.Linear(input_size, 32)
