@@ -29,15 +29,20 @@ class gameEnvironment:
   def getState(self):
     return self.state,self.reward
 
-def collectTrajectory(steps):
+def collectTrajectory(steps,actor):
+  gamma=0.85
   user=gameEnvironment()
-  actor=Actor(3,2)#3 for current state (2 numbers) and the reward(treating observation=reward) and concatenating state+observation
+  #actor=Actor(3,2)#3 for current state (2 numbers) and the reward(treating observation=reward) and concatenating state+observation
   #returns 2d for the action to take
   rewards=[]
+  rewards_to_go=[]
   #observations=[]
   log_probs=[]
   states=[]
   for _ in range(steps):
+    randNumber=random.randint(1,100)
+    if randNumber>95:#sequence must end at some point
+      break
     state,reward=user.getState()
     actorInput=torch.tensor([state[0],state[1],reward])
     newState=actor(actorInput)
@@ -49,3 +54,8 @@ def collectTrajectory(steps):
     rewards.append(useReward)
     log_probs.append(log_prob)
     states.append(useState)
+    if len(rewards_to_go)==0:
+      rewards_to_go.append(useReward)
+    else:
+      rewards_to_go.append(useReward+gamma*rewards_to_go[-1])
+  return rewards,rewards_to_go,log_probs,states

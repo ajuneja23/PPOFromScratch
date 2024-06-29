@@ -7,10 +7,10 @@ Original file is located at
     https://colab.research.google.com/drive/1T10Lqz0bPgMPmGY9N2ohxxudKyAacGRn
 """
 
-!pip install gymnasium
+"""!pip install gymnasium
 
 !pip install swig
-!pip install gymnasium[box2d]
+!pip install gymnasium[box2d]"""
 
 import gymnasium as gym
 import Box2D
