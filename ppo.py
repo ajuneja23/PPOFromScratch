@@ -27,7 +27,7 @@ class PPO:
         self.critic_optim = optim.Adam(self.critic.parameters(), lr=lr)
 
 
-    def work(self, num_steps):
+    def work(self, num_steps,iterations_per_step):
         
         for step in range(num_steps):
             rewards_tot, rtg_tot, log_probs_tot, actions_tot, observations_tot = [], [], [], [], [], []
@@ -42,9 +42,16 @@ class PPO:
             #critic now needs to evaluate the 
 
 
-            normalized_advantages = self.getAdvantageEstimates(observations_tot, rtg_tot)
+            normalized_advantages,valueEstimates= self.getAdvantageEstimates(observations_tot, rtg_tot)
 
-            
+            for _ in range(iterations_per_step):
+                #TODO: Actor Loss
+                critic_loss=nn.MSELoss()
+                res=critic_loss(valueEstimates,rtg_tot)
+                self.critic_optim.zero_grad()
+                res.backward()
+                self.critic_optim.step()
+
 
 
 
@@ -58,7 +65,7 @@ class PPO:
         advantageEstimates=rewards_to_go-valueScores.detach()
 
         normalizedAdvEstimates=(advantageEstimates-advantageEstimates.mean())/(advantageEstimates.std()+1e-10)
-        return normalizedAdvEstimates
+        return normalizedAdvEstimates,valueScores
     
 
     
