@@ -27,19 +27,35 @@ class PPO:
         self.actor_optim = optim.Adam(self.actor.parameters(), lr=lr)
         self.critic_optim = optim.Adam(self.critic.parameters(), lr=lr)
 
-        self.variance = torch.full(size=(self.action_dim,), fill_value=0.4)
-        self.variance_matrix = torch.diag(self.variance)
 
-    def work(num_iter):
-        curr = 0
+    def work(self):
+        rewards, rewards_to_go, log_probs, actions, observations = collectTrajectory(self.actor)
+
+        #critic now needs to evaluate the 
+
+        observations = torch.tensor(observations)
+
+        normalized_advantages = self.getAdvantageEstimates(observations)
+
+        print("learned")
+
+        return normalized_advantages
+
+
+
+        
+
 
     def getAdvantageEstimates(self,rewards,rewards_to_go,states):
         criticInput=torch.cat((torch.tensor(states),torch.tensor(rewards)),1)
-        valueScores=critic(criticInput).squeeze()
+        valueScores=self.critic(criticInput).squeeze()
         advantageEstimates=rewards_to_go-valueScores.detach()
 
         normalizedAdvEstimates=(advantageEstimates-advantageEstimates.mean())/(advantageEstimates.std()+1e-10)
         return normalizedAdvEstimates
+    
+
+    
 
 
         
