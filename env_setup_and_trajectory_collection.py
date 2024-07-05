@@ -58,4 +58,4 @@ def collectTrajectory(actor,env,gamma):
     actions.append(action)
     log_prob=distr.log_prob(action)
     log_probs.append(log_prob)
-  return rewards,rewards_to_go,log_probs,states
+  return rewards,rewards_to_go,log_probs,actions,observations
