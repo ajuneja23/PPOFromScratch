@@ -47,14 +47,15 @@ def collectTrajectory(actor,env,gamma):
     mean_action=actor(torch.tensor(obs))
     obs,reward,done,_=env.step(action)
     rewards.append(reward)
-    if len(rewards_to_go)==0:
-      rewards_to_go.append(reward)
-    else:
-      rewards_to_go.append(rewards_to_go[-1]*gamma+reward)
     covMatrix=torch.diag(torch.full(size=(2,),fill_value=0.5))
     distr=MultivariateNormal(mean_action,covMatrix)
     action=distr.sample()
     actions.append(action)
     log_prob=distr.log_prob(action)
     log_probs.append(log_prob)
+  reward_to_go=0
+  for i in range(len(rewards)-1,-1,-1):
+    reward_to_go*=gamma
+    reward_to_go+=rewards[i]
+    rewards_to_go.insert(0,reward_to_go)
   return rewards,rewards_to_go,log_probs,actions,observations
