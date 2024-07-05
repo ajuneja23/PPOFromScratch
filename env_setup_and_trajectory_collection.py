@@ -47,7 +47,6 @@ def collectTrajectory(actor,env,gamma):
     mean_action=actor(torch.tensor(obs))
     obs,reward,done,_=env.step(action)
     rewards.append(reward)
-    observations.append(obs)
     if len(rewards_to_go)==0:
       rewards_to_go.append(reward)
     else:
