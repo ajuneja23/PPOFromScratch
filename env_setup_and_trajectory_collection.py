@@ -12,6 +12,7 @@ from torch.distributions import MultivariateNormal
 
 import random
 
+"""
 class gameEnvironment:
   def __init__(self):
     self.state=(0,0)
@@ -28,34 +29,33 @@ class gameEnvironment:
     return self.reward,self.state
   def getState(self):
     return self.state,self.reward
+  """
 
-def collectTrajectory(steps,actor):
+def collectTrajectory(actor,env,gamma):
   gamma=0.85
-  user=gameEnvironment()
   #actor=Actor(3,2)#3 for current state (2 numbers) and the reward(treating observation=reward) and concatenating state+observation
   #returns 2d for the action to take
   rewards=[]
   rewards_to_go=[]
-  #observations=[]
+  observations=[]
   log_probs=[]
-  states=[]
-  for _ in range(steps):
-    randNumber=random.randint(1,100)
-    if randNumber>95:#sequence must end at some point
-      break
-    state,reward=user.getState()
-    actorInput=torch.tensor([state[0],state[1],reward])
-    newState=actor(actorInput)
-    covMatrix=torch.diag(torch.full(size=(2,),fill_value=0.5))
-    distr=MultivariateNormal(torch.tensor([newState[0],newState[1]]),covMatrix)
-    usedState=distr.sample()
-    log_prob = distr.log_prob(usedState)
-    useReward,useState=gameEnvironment.takeAction(usedState[0],usedState[1])
-    rewards.append(useReward)
-    log_probs.append(log_prob)
-    states.append(useState)
+  done=True
+  actions=[]
+  obs=env.reset()
+  while not done:
+    observations.append(obs)
+    mean_action=actor(torch.tensor(obs))
+    obs,reward,done,_=env.step(action)
+    rewards.append(reward)
+    observations.append(obs)
     if len(rewards_to_go)==0:
-      rewards_to_go.append(useReward)
+      rewards_to_go.append(reward)
     else:
-      rewards_to_go.append(useReward+gamma*rewards_to_go[-1])
+      rewards_to_go.append(rewards_to_go[-1]*gamma+reward)
+    covMatrix=torch.diag(torch.full(size=(2,),fill_value=0.5))
+    distr=MultivariateNormal(mean_action,covMatrix)
+    action=distr.sample()
+    actions.append(action)
+    log_prob=distr.log_prob(action)
+    log_probs.append(log_prob)
   return rewards,rewards_to_go,log_probs,states
