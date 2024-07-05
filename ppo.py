@@ -17,12 +17,12 @@ class PPO:
         reward_dim=1
         """
         self.env = env
-        #self.action_dim = env.action_space.shape[0]
-        #self.obs_dim = env.observation_space.shape[0]
+        self.action_dim = env.action_space.shape[0]
+        self.obs_dim = env.observation_space.shape[0]
         self.action_dim=action_dim
-        self.state_dim=state_dim
-        self.actor = Actor(self.state_dim+1, self.action_dim)#position and most recent reward comprise the state_dim 
-        self.critic = Critic(action_dim+state_dim, 1)#obs_dim=concatenated action-state of a move (I went to position 4,4 after taking action moveLeft)
+        self.obs_dim=obs_dim
+        self.actor = Actor(self.obs_dim, self.action_dim)
+        self.critic = Critic(self.obs_dim, 1)
 
         self.actor_optim = optim.Adam(self.actor.parameters(), lr=lr)
         self.critic_optim = optim.Adam(self.critic.parameters(), lr=lr)
