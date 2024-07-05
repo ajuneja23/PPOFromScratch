@@ -33,9 +33,8 @@ class PPO:
 
         #critic now needs to evaluate the 
 
-        observations = torch.tensor(observations)
 
-        normalized_advantages = self.getAdvantageEstimates(observations)
+        normalized_advantages = self.getAdvantageEstimates(observations, rewards_to_go)
 
         print("learned")
 
@@ -46,8 +45,8 @@ class PPO:
         
 
 
-    def getAdvantageEstimates(self,rewards,rewards_to_go,states):
-        criticInput=torch.cat((torch.tensor(states),torch.tensor(rewards)),1)
+    def getAdvantageEstimates(self, observations, rewards_to_go):
+        criticInput = torch.tensor(observations)
         valueScores=self.critic(criticInput).squeeze()
         advantageEstimates=rewards_to_go-valueScores.detach()
 
