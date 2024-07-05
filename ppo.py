@@ -29,12 +29,20 @@ class PPO:
 
 
     def work(self):
-        rewards, rewards_to_go, log_probs, actions, observations = collectTrajectory(self.actor)
+        
+        rewards_tot, rtg_tot, log_probs_tot, actions_tot, observations_tot = [], [], [], [], [], []
 
+        for _ in range(20):
+            rewards, rewards_to_go, log_probs, actions, observations = collectTrajectory(self.actor)
+            rewards_tot.extend(rewards)
+            rtg_tot.extend(rewards_to_go)
+            log_probs_tot.extend(log_probs)
+            actions_tot.extend(actions)
+            observations_tot.extend(observations)
         #critic now needs to evaluate the 
 
 
-        normalized_advantages = self.getAdvantageEstimates(observations, rewards_to_go)
+        normalized_advantages = self.getAdvantageEstimates(observations_tot, rtg_tot)
 
         print("learned")
 
@@ -47,6 +55,7 @@ class PPO:
 
     def getAdvantageEstimates(self, observations, rewards_to_go):
         criticInput = torch.tensor(observations)
+        rewards_to_go = torch.tensor(rewards_to_go)
         valueScores=self.critic(criticInput).squeeze()
         advantageEstimates=rewards_to_go-valueScores.detach()
 
