@@ -20,7 +20,6 @@ class PPO:
         self.action_dim = env.action_space.shape[0]
         self.obs_dim = env.observation_space.shape[0]
         self.action_dim=action_dim
-        self.obs_dim=obs_dim
         self.actor = Actor(self.obs_dim, self.action_dim)
         self.critic = Critic(self.obs_dim, 1)
 
@@ -28,25 +27,24 @@ class PPO:
         self.critic_optim = optim.Adam(self.critic.parameters(), lr=lr)
 
 
-    def work(self):
+    def work(self, num_steps):
         
-        rewards_tot, rtg_tot, log_probs_tot, actions_tot, observations_tot = [], [], [], [], [], []
+        for step in range(num_steps):
+            rewards_tot, rtg_tot, log_probs_tot, actions_tot, observations_tot = [], [], [], [], [], []
 
-        for _ in range(20):
-            rewards, rewards_to_go, log_probs, actions, observations = collectTrajectory(self.actor)
-            rewards_tot.extend(rewards)
-            rtg_tot.extend(rewards_to_go)
-            log_probs_tot.extend(log_probs)
-            actions_tot.extend(actions)
-            observations_tot.extend(observations)
-        #critic now needs to evaluate the 
+            for _ in range(20):
+                rewards, rewards_to_go, log_probs, actions, observations = collectTrajectory(self.actor)
+                rewards_tot.extend(rewards)
+                rtg_tot.extend(rewards_to_go)
+                log_probs_tot.extend(log_probs)
+                actions_tot.extend(actions)
+                observations_tot.extend(observations)
+            #critic now needs to evaluate the 
 
 
-        normalized_advantages = self.getAdvantageEstimates(observations_tot, rtg_tot)
+            normalized_advantages = self.getAdvantageEstimates(observations_tot, rtg_tot)
 
-        print("learned")
-
-        return normalized_advantages
+            
 
 
 
