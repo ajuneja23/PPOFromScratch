@@ -32,25 +32,45 @@ class PPO:
         for step in range(num_steps):
             rewards_tot, rtg_tot, log_probs_tot, actions_tot, observations_tot = [], [], [], [], [], []
 
-            for _ in range(20):
-                rewards, rewards_to_go, log_probs, actions, observations = collectTrajectory(self.actor)
-                rewards_tot.extend(rewards)
-                rtg_tot.extend(rewards_to_go)
-                log_probs_tot.extend(log_probs)
-                actions_tot.extend(actions)
-                observations_tot.extend(observations)
+
+            rewards, rewards_to_go, log_probs, actions, observations = collectTrajectory(self.actor)
+            rewards_tot.extend(rewards)
+            rtg_tot.extend(rewards_to_go)
+            log_probs_tot.extend(log_probs)
+            actions_tot.extend(actions)
+            observations_tot.extend(observations)
             #critic now needs to evaluate the 
 
 
             normalized_advantages,valueEstimates= self.getAdvantageEstimates(observations_tot, rtg_tot)
 
             for _ in range(iterations_per_step):
-                #TODO: Actor Loss
+                
+                rew, rewtg, curr_probs, a, obs= collectTrajectory(self.actor)
+                clip = 0.2
+                past_probs = log_probs_tot
+
+                ratio = np.exp(curr_probs - past_probs)
+
+                clip_term = torch.clamp(ratio, 1-clip, 1+clip)
+
+                term1 = ratio * normalized_advantages
+
+                term2 = ratio * clip_term
+
+                actor_loss = (-1 * torch.min(term1, term2)).mean()
+                self.actor_optim.zero_grad()
+                actor_loss.backward()
+                self.actor_optim.step()
+                
+                
                 critic_loss=nn.MSELoss()
                 res=critic_loss(valueEstimates,rtg_tot)
                 self.critic_optim.zero_grad()
                 res.backward()
                 self.critic_optim.step()
+
+            
 
 
 
