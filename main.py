@@ -1,6 +1,6 @@
 import gymnasium as gym
 
-import PPO from PPO
+from ppo import PPO as PPO
 
 
 def main():
