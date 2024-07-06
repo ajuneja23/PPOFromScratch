@@ -1,13 +1,15 @@
 import gymnasium as gym
 
-import PPO from PPO
+import PPO from ppo as PPO
 
 
-env=gym.make('LunarLanderContinuous-v2',render_mode='human')
+def main():
+    
+    
+    env=gym.make('LunarLanderContinuous-v2',render_mode='human')
 
+    lr=0.005
+    model=PPO(env,lr)
 
-lr=0.005
-model=PPO(env,lr)
-
-model.work(10,5)
+    model.work(10,5)
 
