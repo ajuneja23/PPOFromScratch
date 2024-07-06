@@ -10,7 +10,7 @@ from env_setup_and_trajectory_collection import collectTrajectory
 
 
 class PPO:
-    def __init__(self, env, lr,action_dim,state_dim):
+    def __init__(self, env, lr):
         """
         state_dim=2 (xCoord,yCoord)
         action_dim=2(xMovement,yMovement)
@@ -19,7 +19,6 @@ class PPO:
         self.env = env
         self.action_dim = env.action_space.shape[0]
         self.obs_dim = env.observation_space.shape[0]
-        self.action_dim=action_dim
         self.actor = Actor(self.obs_dim, self.action_dim)
         self.critic = Critic(self.obs_dim, 1)
 
