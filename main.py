@@ -1,6 +1,6 @@
 import gymnasium as gym
 
-import PPO from ppo as PPO
+import PPO from PPO
 
 
 def main():
@@ -13,3 +13,4 @@ def main():
 
     model.work(10,5)
 
+main()
